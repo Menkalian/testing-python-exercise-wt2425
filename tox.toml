@@ -1,0 +1,12 @@
+requires = ["tox>=4"]
+env_list = ["pytest", "unittest"]
+
+[env.pytest]
+description = "Run pytest"
+deps = ["pytest>=8", "-r requirements.txt"]
+commands = [["pytest", "tests/integration/test_diffusion2d.py"]]
+
+[env.unittest]
+description = "Run unittest"
+deps = ["-r requirements.txt"]
+commands = [["python3", "-m", "unittest", "tests/unit/test_diffusion2d_functions.py"]]

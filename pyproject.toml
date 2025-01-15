@@ -1,0 +1,5 @@
+# I had to add this file so pytest would actually find diffusion2d.py
+[ pyproject.toml]
+
+[tool.pytest.ini_options]
+pythonpath = "."
