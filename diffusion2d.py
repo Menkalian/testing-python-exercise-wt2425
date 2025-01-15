@@ -38,6 +38,11 @@ class SolveDiffusion2D:
         self.dt = None
 
     def initialize_domain(self, w=10., h=10., dx=0.1, dy=0.1):
+        # You could argue individual assertions are better, since it allows to understand which values have the wrong type.
+        # However, for this exercise I keep it like this for initialize_domain and add individual assertions in initialize_physical_parameters
+        # In some cases individual assertions might not even allow for better understanding, if the assertion is deep in a library and the user might
+        # not understand how the values end up there. It probably is a case-by-case decision.
+        assert all(map(lambda v: type(v) == float, [w, h, dx, dy])), "All inputs must be floats"
         self.w = w
         self.h = h
         self.dx = dx
@@ -45,7 +50,10 @@ class SolveDiffusion2D:
         self.nx = int(w / dx)
         self.ny = int(h / dy)
 
-    def initialize_physical_parameters(self, d=4., T_cold=300, T_hot=700):
+    def initialize_physical_parameters(self, d=4., T_cold=300., T_hot=700.):
+        assert type(d) == float, "d must be a float"
+        assert type(T_cold) == float, "T_cold must be a float"
+        assert type(T_hot) == float, "T_cold must be a float"
         self.D = d
         self.T_cold = T_cold
         self.T_hot = T_hot
