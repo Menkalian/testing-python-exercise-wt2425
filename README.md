@@ -422,6 +422,97 @@ test_diffusion2d_functions.py:105: AssertionError
 Process finished with exit code 1
 ```
 
+### pytest-log for Integration-Tests
+
+(breaking `test_initialize_physical_parameters` by taking `dx2*dx2`)
+```
+============================= test session starts ==============================
+collecting ... collected 1 item
+
+test_diffusion2d.py::test_initialize_physical_parameters FAILED          [100%]dt = 0.006666666666666669
+
+test_diffusion2d.py:8 (test_initialize_physical_parameters)
+0.006666666666666669 != 0.001666 ± 1.0e-06
+
+Expected :0.001666 ± 1.0e-06
+Actual   :0.006666666666666669
+<Click to see difference>
+
+def test_initialize_physical_parameters():
+        """
+        Checks function SolveDiffusion2D.initialize_domain
+        """
+        solver = SolveDiffusion2D()
+        solver.initialize_domain(10., 20., 0.2, 0.1)
+        solver.initialize_physical_parameters(2.4, 0., 1.)
+        # dx2 = 0.04
+        # dy2 = 0.01
+        # dt = 0.0004 / (2*2.4*0.05) = 1/600 = 0.0016666
+>       assert solver.dt == pytest.approx(0.001666, abs=1e-6)
+E       assert 0.006666666666666669 == 0.001666 ± 1.0e-06
+E         
+E         comparison failed
+E         Obtained: 0.006666666666666669
+E         Expected: 0.001666 ± 1.0e-06
+
+test_diffusion2d.py:19: AssertionError
+
+
+============================== 1 failed in 0.21s ===============================
+
+Process finished with exit code 1
+```
+
+(breaking `test_set_initial_condition` by cubing instead of squaring)
+```
+============================= test session starts ==============================
+collecting ... collected 1 item
+
+test_diffusion2d.py::test_set_initial_condition FAILED                   [100%]dt = 0.09259259259259259
+
+test_diffusion2d.py:21 (test_set_initial_condition)
+0.0 != np.float64(1.0)
+
+Expected :np.float64(1.0)
+Actual   :0.0
+<Click to see difference>
+
+def test_set_initial_condition():
+        """
+        Checks function SolveDiffusion2D.get_initial_function
+        """
+        solver = SolveDiffusion2D()
+        solver.initialize_domain(10., 10., 1., 1.)
+        solver.initialize_physical_parameters(2.7, 0., 1.)
+        u = solver.set_initial_condition()
+    
+        expected_array= [
+            [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+            [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+            [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+            [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+            [0., 0., 0., 0., 1., 1., 1., 0., 0., 0.],
+            [0., 0., 0., 0., 1., 1., 1., 0., 0., 0.],
+            [0., 0., 0., 0., 1., 1., 1., 0., 0., 0.],
+            [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+            [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+            [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
+        ]
+    
+        for x in range(u.shape[0]):
+            for y in range(u.shape[1]):
+>               assert expected_array[x][y] == u[x, y], f"Values at {x}, {y} do not match"
+E               AssertionError: Values at 0, 0 do not match
+E               assert 0.0 == np.float64(1.0)
+
+test_diffusion2d.py:46: AssertionError
+
+
+============================== 1 failed in 0.21s ===============================
+
+Process finished with exit code 1
+```
+
 ## Citing
 
 The code used in this exercise is based on [Chapter 7 of the book "Learning Scientific Programming with Python"](https://scipython.com/book/chapter-7-matplotlib/examples/the-two-dimensional-diffusion-equation/).
